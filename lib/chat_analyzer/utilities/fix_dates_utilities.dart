@@ -1,29 +1,40 @@
+import 'dart:math';
+
 class FixDateUtilities {
   /// Fixing a string hour of whatsapp to a parsable dart date.
   /// Whatsapp displays message time in AM/PM format.
   /// Hence, 12 midnight is 12:00 AM (instead of 00:00) while 12 noon is 12:00 PM (normal).
+  /// hourFromLine: 10:17 am] Dolev Test Phone: Hi (for android)
+  /// hourFromLine: 10:17:07 am] Dolev Test Phone: Hi (for ios)
   static String hourStringOrganization(String hourFromLine) {
-    String hour = hourFromLine.split(':')[0];
-    String minute = hourFromLine.split(':')[1].split(' ')[0];
-    if (hourFromLine.split(' ').length == 1) {
-      return '${fixMonthOrDayTo01(hour)}:$minute:00';
+    var timeFromLine = hourFromLine.replaceAll(']', '');
+    String hour = timeFromLine.split(':')[0];
+    String minute = timeFromLine.split(':')[1].split(' ')[0];
+    String seconds = timeFromLine.split(':').length < 3
+        ? '${randomTime(5, 50).inSeconds}'
+        : timeFromLine.split(':')[2].split(' ')[0];
+    //
+    if (timeFromLine.split(' ').length == 1) {
+      return '${fixMonthOrDayTo01(hour)}:$minute:$seconds';
     }
     // If message was sent after 12 noon, message time should be converted to PM
-    if (hourFromLine.split(' ')[1] == 'pm' && hour != "12") {
+    if (timeFromLine.split(' ')[1] == 'pm' && hour != "12") {
       hour = '${int.parse(hour) + 12}';
     }
     // If message was sent at 12 midnight, message time should be converted to AM
-    else if (hourFromLine.split(' ')[1] == 'am' && hour == "12") {
+    else if (timeFromLine.split(' ')[1] == 'am' && hour == "12") {
       hour = '${int.parse(hour) - 12}';
     }
     // Otherwise, retain message time
     else {
       hour = fixMonthOrDayTo01(hour);
     }
-    return "$hour:$minute:00";
+    return "$hour:$minute:$seconds";
   }
 
   /// Fixing a string date of whatsapp to a parsable dart date
+  /// dateFromLine: [25/04/2022 (ios)
+  /// dateFromLine: 25/04/2022 (android)
   static String dateStringOrganization(String dateFromLine) {
     dateFromLine = dateFromLine.replaceAll('[', '');
     List listOfMonthDayYear = dateFromLine.split(RegExp(r"[/|.]"));
@@ -63,6 +74,13 @@ class FixDateUtilities {
     } else {
       return '0$fix';
     }
+  }
+
+  /// Generate random time in seconds
+  static Duration randomTime(int min, int max) {
+    final random = Random();
+    var time = Duration(seconds: random.nextInt(max - min + 1) + min);
+    return time;
   }
 
   ///The year in Whatsapp are 22, where it should be 2022.
