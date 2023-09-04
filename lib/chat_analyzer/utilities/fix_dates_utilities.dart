@@ -1,12 +1,23 @@
 class FixDateUtilities {
-  /// Fixing a string hour of whatsapp to a parsable dart date
+  /// Fixing a string hour of whatsapp to a parsable dart date.
+  /// Whatsapp displays message time in AM/PM format.
+  /// Hence, 12 midnight is 12:00 AM (instead of 00:00) while 12 noon is 12:00 PM (normal).
   static String hourStringOrganization(String hourFromLine) {
     String hour = hourFromLine.split(':')[0];
     String minute = hourFromLine.split(':')[1].split(' ')[0];
-    if (hourFromLine.split(' ').length == 1) return '${fixMonthOrDayTo01(hour)}:$minute:00';
-    if (hourFromLine.split(' ')[1] == 'PM') {
+    if (hourFromLine.split(' ').length == 1) {
+      return '${fixMonthOrDayTo01(hour)}:$minute:00';
+    }
+    // If message was sent after 12 noon, message time should be converted to PM
+    if (hourFromLine.split(' ')[1] == 'pm' && hour != "12") {
       hour = '${int.parse(hour) + 12}';
-    } else {
+    }
+    // If message was sent at 12 midnight, message time should be converted to AM
+    else if (hourFromLine.split(' ')[1] == 'am' && hour == "12") {
+      hour = '${int.parse(hour) - 12}';
+    }
+    // Otherwise, retain message time
+    else {
       hour = fixMonthOrDayTo01(hour);
     }
     return "$hour:$minute:00";

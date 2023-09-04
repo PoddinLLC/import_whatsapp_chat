@@ -1,18 +1,17 @@
 import 'dart:io';
-
 import 'package:import_whatsapp_chat/chat_analyzer/languages/languages.dart';
 import 'package:import_whatsapp_chat/models/message_content.dart';
-
 import '../../models/chat_content.dart';
 import 'fix_dates_utilities.dart';
 
 class ChatInfoUtilities {
   /// [_regExp] to find where each message starts and Where it ends:
   /// Android:
-  /// message starts with somthing like: "25/04/2022, 10:17 - Dolev Test Phone: Hi"
+  /// message starts with something like: "25/04/2022, 10:17 am - Dolev Test Phone: Hi"
   /// iOS:
-  /// message starts with somthing like: "[25/04/2022, 10:17:07] Dolev Test Phone: Hi"
-  static final RegExp _regExp = RegExp(r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?");
+  /// message starts with something like: "[25/04/2022, 10:17:07 am] Dolev Test Phone: Hi"
+  static final RegExp _regExp = RegExp(
+      r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?"); // should be revised
 
   /// [_regExpToSplitLineAndroid] and [_regExpToSplitLineIOS] to get the message date and time
   static final RegExp _regExpToSplitLineAndroid = RegExp(r"\s-\s");
@@ -40,8 +39,8 @@ class ChatInfoUtilities {
             msgContents.add(msgContent);
           } else {
             if (msgContent.senderId != null) {
-              countNameMsgs[names.indexOf(msgContent.senderId!)].add(
-                  msgContents.length);
+              countNameMsgs[names.indexOf(msgContent.senderId!)]
+                  .add(msgContents.length);
               msgContents.add(msgContent);
             }
           }
@@ -75,11 +74,13 @@ class ChatInfoUtilities {
   /// Receive a String line and return from it [MessageContent]
   static MessageContent _getMsgContentFromStringLine(String line) {
     MessageContent nullMessageContent =
-    MessageContent(senderId: null, msg: null);
+        MessageContent(senderId: null, msg: null);
 
-    if (Platform.isAndroid && line.split(_regExpToSplitLineAndroid).length == 1) {
+    if (Platform.isAndroid &&
+        line.split(_regExpToSplitLineAndroid).length == 1) {
       return nullMessageContent;
-    } else if (Platform.isIOS && line.split(_regExpToSplitLineIOS).length == 1) {
+    } else if (Platform.isIOS &&
+        line.split(_regExpToSplitLineIOS).length == 1) {
       return nullMessageContent;
     }
 
