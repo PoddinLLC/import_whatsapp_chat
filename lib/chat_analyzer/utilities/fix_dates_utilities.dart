@@ -4,26 +4,26 @@ class FixDateUtilities {
   /// Fixing a string hour of whatsapp to a parsable dart date.
   /// Whatsapp displays message time in AM/PM format.
   /// Hence, 12 midnight is 12:00 AM (instead of 00:00) while 12 noon is 12:00 PM (normal).
-  /// hourFromLine: 10:17 am] Dolev Test Phone: Hi (for android)
-  /// hourFromLine: 10:17:07 am] Dolev Test Phone: Hi (for ios)
-  static String hourStringOrganization(String hourFromLine) {
-    var timeFromLine = hourFromLine.replaceAll(']', '');
-    String hour = timeFromLine.split(':')[0];
-    String minute = timeFromLine.split(':')[1].split(' ')[0];
-    String seconds = timeFromLine.split(':').length < 3
-        ? '${randomTime(5, 50).inSeconds}'
-        : timeFromLine.split(':')[2].split(' ')[0];
+  /// hourFromLine & dayTime (Android): 10:17 || am or pm
+  /// hourFromLine & dayTime (ios): 10:17:07 || am] or pm]
+  static String hourStringOrganization(String hourFromLine, String dayTime) {
+    dayTime = dayTime.replaceAll(']', '');
+    var hour = hourFromLine.split(':')[0];
+    var minute = hourFromLine.split(':')[1].split(' ')[0];
+    var seconds = hourFromLine.split(':').length < 3
+        ? '${randomNumber(5, 50)}'
+        : hourFromLine.split(':')[2].split(' ')[0];
     //
-    if (timeFromLine.split(' ').length == 1) {
-      return '${fixMonthOrDayTo01(hour)}:$minute:$seconds';
-    }
+    // if (hourFromLine.split(' ').length == 1) {
+    //   return '${fixMonthOrDayTo01(hour)}:$minute:$seconds';
+    // }
     // If message was sent after 12 noon, message time should be converted to PM
-    if (timeFromLine.split(' ')[1] == 'pm' && hour != "12") {
+    if (dayTime == 'pm' && hour != "12") {
       hour = '${int.parse(hour) + 12}';
     }
     // If message was sent at 12 midnight, message time should be converted to AM
-    else if (timeFromLine.split(' ')[1] == 'am' && hour == "12") {
-      hour = '${int.parse(hour) - 12}';
+    else if (dayTime  == 'am' && hour == "12") {
+      hour = '00';
     }
     // Otherwise, retain message time
     else {
@@ -76,11 +76,11 @@ class FixDateUtilities {
     }
   }
 
-  /// Generate random time in seconds
-  static Duration randomTime(int min, int max) {
+  /// Generate random number
+  static int randomNumber(int min, int max) {
     final random = Random();
-    var time = Duration(seconds: random.nextInt(max - min + 1) + min);
-    return time;
+    var number = random.nextInt(max - min + 1) + min;
+    return number;
   }
 
   ///The year in Whatsapp are 22, where it should be 2022.

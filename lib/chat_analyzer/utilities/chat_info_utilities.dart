@@ -11,7 +11,7 @@ class ChatInfoUtilities {
   /// iOS:
   /// message starts with something like: "[25/04/2022, 10:17:07 am] Dolev Test Phone: Hi"
   static final RegExp _regExp = RegExp(
-      r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?"); // should be revised
+      r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?");
 
   /// [_regExpToSplitLineAndroid] and [_regExpToSplitLineIOS] to get the message date and time
   static final RegExp _regExpToSplitLineAndroid = RegExp(r"\s-\s");
@@ -121,22 +121,24 @@ class ChatInfoUtilities {
 
     List dateFromLine = splitLineToTwo.split(RegExp(r",?\s"));
 
+    String dayTime = dateFromLine[2];
+
     if (dateFromLine.length == 1) {
       return null;
     }
 
     String? date;
-    String? hour;
+    String? time;
     try {
       date = FixDateUtilities.dateStringOrganization(dateFromLine[0]);
-      hour = FixDateUtilities.hourStringOrganization(dateFromLine[1]);
+      time = FixDateUtilities.hourStringOrganization(dateFromLine[1], dayTime);
     } catch (e) {
       return null;
     }
 
     DateTime datetime;
     try {
-      datetime = DateTime.parse('$date $hour');
+      datetime = DateTime.parse('$date $time');
     } catch (e) {
       return null;
     }
