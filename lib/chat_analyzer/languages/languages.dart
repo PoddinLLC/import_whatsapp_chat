@@ -19,6 +19,18 @@ class Languages {
     'أنت حذفت هذه الرسالة', // Arabic
   ];
 
+  static const List<String> missedVideoCall = [
+    'Missed video call', // English
+  ];
+
+  static const List<String> missedAudioCall = [
+    'Missed audio call', // English
+  ];
+
+  static const List<String> attachment = [
+    'file attached', // English
+  ];
+
   static const List<String> mediaOmitted = [
     '<Media omitted>', // English
     '<המדיה הוסרה>', // Hebrew
@@ -56,7 +68,10 @@ class Languages {
     }
     return hasMatch(text, youDeletedThisMessage) ||
         hasMatch(text, mediaOmitted) ||
-        hasMatch(text, thisMessageWasDeleted);
+        hasMatch(text, thisMessageWasDeleted) ||
+        hasMatch(text, missedAudioCall) ||
+        hasMatch(text, missedVideoCall) ||
+        hasMatch(text, attachment);
   }
 
   static bool hasMatch(String text, List<String> list) {
