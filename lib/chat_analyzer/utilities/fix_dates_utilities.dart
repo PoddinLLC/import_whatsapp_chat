@@ -7,7 +7,7 @@ class FixDateUtilities {
   /// hourFromLine & dayTime (Android): 10:17 || am or pm
   /// hourFromLine & dayTime (ios): 10:17:07 || am] or pm]
   static String hourStringOrganization(String hourFromLine, String dayTime) {
-    dayTime = dayTime.replaceAll(']', '');
+    dayTime = dayTime.replaceFirst(']', '');
     var hour = hourFromLine.split(':')[0];
     var minute = hourFromLine.split(':')[1].split(' ')[0];
     var seconds = hourFromLine.split(':').length < 3
