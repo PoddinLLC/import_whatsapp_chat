@@ -10,7 +10,7 @@ class FixDateUtilities {
     dayTime = dayTime.replaceFirst(']', '');
     var hour = hourFromLine.split(':')[0];
     var minute = hourFromLine.split(':')[1].split(' ')[0];
-    var seconds = hourFromLine.split(':').length < 3
+    var seconds = hourFromLine.split(':').length == 2
         ? '${randomNumber(5, 50)}'
         : hourFromLine.split(':')[2].split(' ')[0];
     //
@@ -22,7 +22,7 @@ class FixDateUtilities {
       hour = '${int.parse(hour) + 12}';
     }
     // If message was sent at 12 midnight, message time should be converted to AM
-    else if (dayTime  == 'am' && hour == "12") {
+    else if (dayTime == 'am' && hour == "12") {
       hour = '00';
     }
     // Otherwise, retain message time

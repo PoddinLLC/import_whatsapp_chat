@@ -33,13 +33,13 @@ class ChatInfoUtilities {
           MessageContent msgContent = _getMsgContentFromStringLine(
               lines[lines.length - (isAndroid ? 1 : 2)]);
           if (!names.contains(msgContent.senderId) &&
-              msgContent.senderId != null) {
-            names.add(msgContent.senderId!);
+              msgContent.senderId.isNotEmpty) {
+            names.add(msgContent.senderId);
             countNameMsgs.add([msgContents.length]);
             msgContents.add(msgContent);
           } else {
-            if (msgContent.senderId != null) {
-              countNameMsgs[names.indexOf(msgContent.senderId!)]
+            if (msgContent.senderId.isNotEmpty) {
+              countNameMsgs[names.indexOf(msgContent.senderId)]
                   .add(msgContents.length);
               msgContents.add(msgContent);
             }
@@ -73,8 +73,8 @@ class ChatInfoUtilities {
 
   /// Receive a String line and return from it [MessageContent]
   static MessageContent _getMsgContentFromStringLine(String line) {
-    MessageContent nullMessageContent =
-        MessageContent(senderId: null, msg: null);
+    MessageContent nullMessageContent = MessageContent(
+        senderId: '', msg: '', dateTime: DateTime.parse('0-0-0'));
 
     if (Platform.isAndroid &&
         line.split(_regExpToSplitLineAndroid).length == 1) {
@@ -104,17 +104,17 @@ class ChatInfoUtilities {
   }
 
   /// Receive a String line and return from it [DateTime], if it fails it returns null
-  static DateTime? _parseLineToDatetime(String line) {
+  static DateTime _parseLineToDatetime(String line) {
     RegExp regExp;
     if (Platform.isAndroid) {
       regExp = _regExpToSplitLineAndroid;
     } else if (Platform.isIOS) {
       regExp = _regExpToSplitLineIOS;
     } else {
-      return null;
+      return DateTime.parse('0-0-0');
     }
     if (line.split(regExp).length == 1) {
-      return null;
+      return DateTime.parse('0-0-0');
     }
 
     String splitLineToTwo = line.split(regExp).first;
@@ -124,7 +124,7 @@ class ChatInfoUtilities {
     String dayTime = dateFromLine[2];
 
     if (dateFromLine.length == 1) {
-      return null;
+      return DateTime.parse('0-0-0');
     }
 
     String? date;
@@ -133,14 +133,14 @@ class ChatInfoUtilities {
       date = FixDateUtilities.dateStringOrganization(dateFromLine[0]);
       time = FixDateUtilities.hourStringOrganization(dateFromLine[1], dayTime);
     } catch (e) {
-      return null;
+      return DateTime.parse('0-0-0');
     }
 
     DateTime datetime;
     try {
       datetime = DateTime.parse('$date $time');
     } catch (e) {
-      return null;
+      return DateTime.parse('0-0-0');
     }
     return datetime;
   }

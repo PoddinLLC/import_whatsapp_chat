@@ -8,14 +8,14 @@ import '../chat_analyzer/utilities/fix_dates_utilities.dart';
 
 /// Each message in the chat class
 class MessageContent {
-  MessageContent({required this.senderId, required this.msg, this.dateTime});
+  MessageContent(
+      {required this.senderId, required this.msg, required this.dateTime});
 
-  final String? senderId;
-  final String? msg;
-  final DateTime? dateTime;
+  final String senderId;
+  final String msg;
+  final DateTime dateTime;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'senderId': senderId,
         'msg': msg,
         'dateTime': dateTime.toString(),
@@ -28,13 +28,15 @@ class MessageContent {
 
   bool isImage() {
     RegExp pattern = RegExp(r'IMG-\d\d\d\d\d\d\d\d-WA\d\d\d\d\d?\d?[.]jpg');
-    if (dateTime != null && msg != null) {
-      String dateTimeString = dateTime!.year.toString() +
-          FixDateUtilities.fixMonthOrDayTo01(dateTime!.month.toString()) +
-          FixDateUtilities.fixMonthOrDayTo01(dateTime!.day.toString());
-      return msg!.startsWith("IMG-$dateTimeString-WA") && msg!.startsWith(pattern);
-    } else if (msg != null) {
-      return msg!.startsWith(pattern);
+    if ( //dateTime != null &&
+        msg.isNotEmpty) {
+      String dateTimeString = dateTime.year.toString() +
+          FixDateUtilities.fixMonthOrDayTo01(dateTime.month.toString()) +
+          FixDateUtilities.fixMonthOrDayTo01(dateTime.day.toString());
+      return msg.startsWith("IMG-$dateTimeString-WA") &&
+          msg.startsWith(pattern);
+    } else if (msg.isNotEmpty) {
+      return msg.startsWith(pattern);
     }
     return false;
   }
@@ -49,6 +51,7 @@ class MessageContent {
       return MessageContent(
         senderId: messageMap['senderId'],
         msg: messageMap['msg'],
+        dateTime: DateTime.parse(messageMap['dateTime']),
       );
     }
   }
@@ -67,11 +70,11 @@ class MessageContent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is MessageContent &&
-              runtimeType == other.runtimeType &&
-              senderId == other.senderId &&
-              msg == other.msg &&
-              dateTime == other.dateTime;
+      other is MessageContent &&
+          runtimeType == other.runtimeType &&
+          senderId == other.senderId &&
+          msg == other.msg &&
+          dateTime == other.dateTime;
 
   @override
   int get hashCode => hashValues(senderId, msg, dateTime);
