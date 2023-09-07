@@ -8,12 +8,11 @@ import '../chat_analyzer/utilities/fix_dates_utilities.dart';
 
 /// Each message in the chat class
 class MessageContent {
-  MessageContent(
-      {required this.senderId, required this.msg, required this.dateTime});
+  MessageContent({required this.senderId, required this.msg, this.dateTime});
 
-  final String senderId;
-  final String msg;
-  final DateTime dateTime;
+  final String? senderId;
+  final String? msg;
+  final DateTime? dateTime;
 
   Map<String, dynamic> toJson() => {
         'senderId': senderId,
@@ -28,15 +27,14 @@ class MessageContent {
 
   bool isImage() {
     RegExp pattern = RegExp(r'IMG-\d\d\d\d\d\d\d\d-WA\d\d\d\d\d?\d?[.]jpg');
-    if ( //dateTime != null &&
-        msg.isNotEmpty) {
-      String dateTimeString = dateTime.year.toString() +
-          FixDateUtilities.fixMonthOrDayTo01(dateTime.month.toString()) +
-          FixDateUtilities.fixMonthOrDayTo01(dateTime.day.toString());
-      return msg.startsWith("IMG-$dateTimeString-WA") &&
-          msg.startsWith(pattern);
-    } else if (msg.isNotEmpty) {
-      return msg.startsWith(pattern);
+    if (dateTime != null && msg != null) {
+      String dateTimeString = dateTime!.year.toString() +
+          FixDateUtilities.fixMonthOrDayTo01(dateTime!.month.toString()) +
+          FixDateUtilities.fixMonthOrDayTo01(dateTime!.day.toString());
+      return msg!.startsWith("IMG-$dateTimeString-WA") &&
+          msg!.startsWith(pattern);
+    } else if (msg != null) {
+      return msg!.startsWith(pattern);
     }
     return false;
   }
@@ -51,7 +49,6 @@ class MessageContent {
       return MessageContent(
         senderId: messageMap['senderId'],
         msg: messageMap['msg'],
-        dateTime: DateTime.parse(messageMap['dateTime']),
       );
     }
   }
