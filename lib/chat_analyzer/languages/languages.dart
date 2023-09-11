@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 /// When WhatsApp export a chat it will export the special messages in different languages.
 /// I added support for those languages. If you have a language that is not supported,
 /// please sent it to me and I will add it. Thanks!
@@ -62,7 +64,7 @@ class Languages {
 
   static bool hasMatchForAll(String text) {
     /// In iOS the spacial messages it a little bit different
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       text = text.replaceAll('.', '');
       text = text.replaceRange(0, 1, '');
     }

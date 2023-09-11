@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:import_whatsapp_chat/ios/ios_utils.dart';
 import 'package:import_whatsapp_chat/share/share.dart';
 import 'chat_analyzer/chat_analyzer.dart';
 import 'models/chat_content.dart';
-
 export 'models/models.dart';
 
 ///I used Duarte Silveira share package. See: https://github.com/d-silveira/flutter-share.
@@ -35,7 +35,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     /// For sharing images coming from outside the app while the app is closed
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       ReceiveSharingIntent.getInitialMedia().then(_receiveShareInternalIOS);
     }
     enableShareReceiving();
@@ -54,10 +54,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Enable the receiving
   void enableShareReceiving() {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       _shareReceiveSubscription ??=
           stream.receiveBroadcastStream().listen(_receiveShareInternalAndroid);
-    } else if (Platform.isIOS) {
+    } else if (!kIsWeb && Platform.isIOS) {
       _shareReceiveSubscription ??= ReceiveSharingIntent.getMediaStream()
           .listen(_receiveShareInternalIOS);
     }
@@ -123,10 +123,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Check if the url is a WhatsApp chat url
   bool isWhatsAppChatUrl(String url) {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       return url
           .startsWith("content://com.whatsapp.provider.media/export_chat/");
-    } else if (Platform.isIOS) {
+    } else if (!kIsWeb && Platform.isIOS) {
       return url
           .startsWith("file:///private/var/mobile/Containers/Shared/AppGroup/");
     }

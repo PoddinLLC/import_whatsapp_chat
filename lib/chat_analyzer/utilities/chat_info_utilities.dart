@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:import_whatsapp_chat/chat_analyzer/languages/languages.dart';
 import 'package:import_whatsapp_chat/models/message_content.dart';
 import '../../models/chat_content.dart';
@@ -19,7 +20,7 @@ class ChatInfoUtilities {
 
   /// chat info contains messages per member, members of the chat, messages, and size of the chat
   static ChatContent getChatInfo(List<String> chat) {
-    bool isAndroid = Platform.isAndroid;
+    bool isAndroid = !kIsWeb && Platform.isAndroid;
     List<String> names = [];
     List<List<int>> countNameMsgs = [];
     List<MessageContent> msgContents = [];
@@ -77,11 +78,11 @@ class ChatInfoUtilities {
         MessageContent(senderId: null, msg: null, dateTime: null);
     //
     RegExp regExp =
-        Platform.isAndroid ? _regExpToSplitLineAndroid : _regExpToSplitLineIOS;
+       !kIsWeb &&  Platform.isAndroid ? _regExpToSplitLineAndroid : _regExpToSplitLineIOS;
 
-    if (Platform.isAndroid && line.split(regExp).length == 1) {
+    if (!kIsWeb && Platform.isAndroid && line.split(regExp).length == 1) {
       return nullMessageContent;
-    } else if (Platform.isIOS && line.split(regExp).length == 1) {
+    } else if (!kIsWeb && Platform.isIOS && line.split(regExp).length == 1) {
       return nullMessageContent;
     }
 
@@ -107,9 +108,9 @@ class ChatInfoUtilities {
   /// Receive a String line and return from it [DateTime], if it fails it returns null
   static DateTime? _parseLineToDatetime(String line) {
     RegExp regExp;
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       regExp = _regExpToSplitLineAndroid;
-    } else if (Platform.isIOS) {
+    } else if (!kIsWeb && Platform.isIOS) {
       regExp = _regExpToSplitLineIOS;
     } else {
       return null;

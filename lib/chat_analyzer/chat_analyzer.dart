@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:import_whatsapp_chat/chat_analyzer/utilities/chat_info_utilities.dart';
 import 'package:import_whatsapp_chat/models/chat_content.dart';
 import 'dart:io';
@@ -23,7 +24,7 @@ class ChatAnalyzer {
   /// WhatsApp Chat with [name_of_chat].txt
   /// The function spilt the name of the chat.
   static String _getChatName(String name) {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       return name.split('.txt').first.split('WhatsApp Chat with ').last;
     } else {
       return name.split('.zip').first.split('WhatsApp Chat - ').last;
