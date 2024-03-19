@@ -75,7 +75,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
     debugPrint("disabled share receiving");
   }
 
-  /// Receive the share Android - in our case we receive a zip file url: file:///private/var/mobile/Containers/Shared/AppGroup/...
+  /// Receive the share IOS - in our case we receive a zip file url: file:///private/var/mobile/Containers/Shared/AppGroup/...
   void _receiveShareInternalIOS(List<SharedMediaFile> shared) {
     debugPrint("Share received - $shared");
     if (shared.isNotEmpty) receiveShareIOS(shared[0].path);

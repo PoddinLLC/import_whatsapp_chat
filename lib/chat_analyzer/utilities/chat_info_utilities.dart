@@ -8,15 +8,15 @@ import 'fix_dates_utilities.dart';
 class ChatInfoUtilities {
   /// [_regExp] to find where each message starts and Where it ends:
   /// Android:
-  /// message starts with something like: "25/04/2022, 10:17 am - Dolev Test Phone: Hi"
+  /// message starts with something like: "25/04/2022, 10:17 - Dolev Test Phone: Hi"
   /// iOS:
-  /// message starts with something like: "[25/04/2022, 10:17:07 am] Dolev Test Phone: Hi"
+  /// message starts with something like: "[25/04/2022, 10:17:07] Dolev Test Phone: Hi"
   static final RegExp _regExp = RegExp(
       r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?");
 
   /// [_regExpToSplitLineAndroid] and [_regExpToSplitLineIOS] to get the message date and time
   static final RegExp _regExpToSplitLineAndroid = RegExp(r"\s-\s");
-  static final RegExp _regExpToSplitLineIOS = RegExp(r"]\s");
+  static final RegExp _regExpToSplitLineIOS = RegExp(r":\d\d]\s");
 
   /// chat info contains messages per member, members of the chat, messages, and size of the chat
   static ChatContent getChatInfo(List<String> chat) {
@@ -75,10 +75,11 @@ class ChatInfoUtilities {
   /// Receive a String line and return from it [MessageContent]
   static MessageContent _getMsgContentFromStringLine(String line) {
     MessageContent nullMessageContent =
-        MessageContent(senderId: null, msg: null, dateTime: null);
+        MessageContent(senderId: null, msg: null);
     //
-    RegExp regExp =
-       !kIsWeb &&  Platform.isAndroid ? _regExpToSplitLineAndroid : _regExpToSplitLineIOS;
+    RegExp regExp = !kIsWeb && Platform.isAndroid
+        ? _regExpToSplitLineAndroid
+        : _regExpToSplitLineIOS;
 
     if (!kIsWeb && Platform.isAndroid && line.split(regExp).length == 1) {
       return nullMessageContent;
