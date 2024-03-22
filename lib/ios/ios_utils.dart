@@ -5,12 +5,13 @@ import 'package:path_provider/path_provider.dart';
 
 /// iOS custom only functions
 class IOSUtils {
-  /// Un zip the zip file from WhatsApp
+  /// Unzip the zip file from WhatsApp
   static Future<bool> unzip(String zipPath, [Directory? destination]) async {
-    destination ??= await getApplicationDocumentsDirectory();
+    destination ??= await getTemporaryDirectory();
     // zipPath = zipPath.split('file://').last;
     final zipFile = File(zipPath);
     try {
+      debugPrint("Extracting zip file to directory: ${destination.toString()}");
       await ZipFile.extractToDirectory(
           zipFile: zipFile, destinationDir: destination);
       return true;
@@ -22,11 +23,17 @@ class IOSUtils {
 
   /// Read the txt file inside the extracted zip file
   static Future<List<String>> readFile([String? path]) async {
-    path ??= '${(await getApplicationDocumentsDirectory()).path}/_chat.txt';
-    final file = File(path);
-    List<String> lines = await file.readAsLines();
-    await deleteFile(path);
-    return lines;
+    try {
+      path ??= '${(await getTemporaryDirectory()).path}/_chat.txt';
+      debugPrint("Reading zip file: $path");
+      final file = File(path);
+      List<String> lines = await file.readAsLines();
+      await deleteFile(path);
+      return lines;
+    } catch (e) {
+      debugPrint("Error reading zip file $path: $e");
+      return [];
+    }
   }
 
   /// Delete the file after we read it

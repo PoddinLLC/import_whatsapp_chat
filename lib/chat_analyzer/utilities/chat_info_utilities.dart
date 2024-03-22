@@ -8,11 +8,14 @@ import 'fix_dates_utilities.dart';
 class ChatInfoUtilities {
   /// [_regExp] to find where each message starts and Where it ends:
   /// Android:
-  /// message starts with something like: "25/04/2022, 10:17 - Dolev Test Phone: Hi"
+  /// message starts with something like: "25/04/2022, 10:17 am - Dolev Test Phone: Hi"
   /// iOS:
   /// message starts with something like: "[25/04/2022, 10:17:07] Dolev Test Phone: Hi"
   static final RegExp _regExp = RegExp(
       r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?");
+
+  static final bool isAndroid = !kIsWeb && Platform.isAndroid;
+  static final bool isIOS = !kIsWeb && Platform.isIOS;
 
   /// [_regExpToSplitLineAndroid] and [_regExpToSplitLineIOS] to get the message date and time
   static final RegExp _regExpToSplitLineAndroid = RegExp(r"\s-\s");
@@ -20,7 +23,6 @@ class ChatInfoUtilities {
 
   /// chat info contains messages per member, members of the chat, messages, and size of the chat
   static ChatContent getChatInfo(List<String> chat) {
-    bool isAndroid = !kIsWeb && Platform.isAndroid;
     List<String> names = [];
     List<List<int>> countNameMsgs = [];
     List<MessageContent> msgContents = [];
@@ -77,11 +79,10 @@ class ChatInfoUtilities {
     MessageContent nullMessageContent =
         MessageContent(senderId: null, msg: null);
     //
-    RegExp regExp = !kIsWeb && Platform.isAndroid
-        ? _regExpToSplitLineAndroid
-        : _regExpToSplitLineIOS;
+    RegExp regExp =
+        isAndroid ? _regExpToSplitLineAndroid : _regExpToSplitLineIOS;
 
-    if (!kIsWeb && Platform.isAndroid && line.split(regExp).length == 1) {
+    if (isAndroid && line.split(regExp).length == 1) {
       return nullMessageContent;
     } else if (!kIsWeb && Platform.isIOS && line.split(regExp).length == 1) {
       return nullMessageContent;
@@ -109,9 +110,9 @@ class ChatInfoUtilities {
   /// Receive a String line and return from it [DateTime], if it fails it returns null
   static DateTime? _parseLineToDatetime(String line) {
     RegExp regExp;
-    if (!kIsWeb && Platform.isAndroid) {
+    if (isAndroid) {
       regExp = _regExpToSplitLineAndroid;
-    } else if (!kIsWeb && Platform.isIOS) {
+    } else if (isIOS) {
       regExp = _regExpToSplitLineIOS;
     } else {
       return null;
@@ -124,7 +125,7 @@ class ChatInfoUtilities {
 
     List dateFromLine = splitLineToTwo.split(RegExp(r",?\s"));
 
-    String dayTime = dateFromLine[2];
+    String dayTime = isIOS ? '' : dateFromLine[2];
 
     if (dateFromLine.length == 1) {
       return null;
