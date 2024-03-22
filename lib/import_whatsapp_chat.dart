@@ -20,7 +20,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Method Channel [methodChannel] for analyzing the chat
   static const MethodChannel methodChannel =
-  MethodChannel('com.whatsapp.chat/chat');
+      MethodChannel('com.whatsapp.chat/chat');
 
   /// Can Receive the chat or not
   bool shareReceiveEnabled = false;
@@ -59,7 +59,9 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
           stream.receiveBroadcastStream().listen(_receiveShareInternalAndroid);
     } else if (!kIsWeb && Platform.isIOS) {
       _shareReceiveSubscription ??= ReceiveSharingIntent.getMediaStream()
-          .listen(_receiveShareInternalIOS);
+          .listen(_receiveShareInternalIOS, onError: (err) {
+        debugPrint("Share intent error: $err");
+      });
     }
     shareReceiveEnabled = true;
     debugPrint("enabled share receiving");
