@@ -100,8 +100,9 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   }
 
   /// In iOS WhatsApp sends us a zip file.
-  /// We need to unzip the file, read it and sent it to the [ChatAnalyzer.analyze]
+  /// We need to unzip the file, read it and send it to the [ChatAnalyzer.analyze]
   Future<void> receiveShareIOS(String path) async {
+    debugPrint("IOS whatsapp zip file path - $path");
     // path = Uri.decodeFull(path);
     if (!isWhatsAppChatUrl(path)) throw Exception("Not a WhatsApp chat url");
     if (!await IOSUtils.unzip(path)) throw Exception("Unzip failed");
@@ -139,8 +140,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
       return url
           .startsWith("content://com.whatsapp.provider.media/export_chat/");
     } else if (!kIsWeb && Platform.isIOS) {
-      return url
-          .startsWith("file:///private/var/mobile/Containers/Shared/AppGroup/");
+      return url.startsWith("/private/var/mobile/Containers/Shared/AppGroup/");
     }
     return false;
   }

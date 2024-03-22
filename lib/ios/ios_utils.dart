@@ -8,10 +8,11 @@ class IOSUtils {
   /// Un zip the zip file from WhatsApp
   static Future<bool> unzip(String zipPath, [Directory? destination]) async {
     destination ??= await getApplicationDocumentsDirectory();
-    zipPath = zipPath.split('file://').last;
+    // zipPath = zipPath.split('file://').last;
     final zipFile = File(zipPath);
     try {
-      await ZipFile.extractToDirectory(zipFile: zipFile, destinationDir: destination);
+      await ZipFile.extractToDirectory(
+          zipFile: zipFile, destinationDir: destination);
       return true;
     } catch (e) {
       debugPrint("Error unzipping $zipPath: $e");
