@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:import_whatsapp_chat/ios/ios_utils.dart';
 import 'package:import_whatsapp_chat/share/share.dart';
+import 'package:share_handler/share_handler.dart';
 import 'chat_analyzer/chat_analyzer.dart';
 import 'models/chat_content.dart';
 export 'models/models.dart';
@@ -31,12 +31,15 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// StreamSubscription [_shareReceiveSubscription] for listener
   StreamSubscription? _shareReceiveSubscription;
 
+  ///
+  final handler = ShareHandlerPlatform.instance;
+
   /// We need to enable [shareReceiveEnabled] at first
   @override
   void initState() {
     /// For sharing images coming from outside the app while the app is closed
     if (!kIsWeb && Platform.isIOS) {
-      ReceiveSharingIntent.getInitialMedia().then(_receiveShareInternalIOS);
+      handler.getInitialSharedMedia().then(receiveShareInternalIOS);
     }
     enableShareReceiving();
     super.initState();
@@ -56,10 +59,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   void enableShareReceiving() {
     if (!kIsWeb && Platform.isAndroid) {
       _shareReceiveSubscription ??=
-          stream.receiveBroadcastStream().listen(_receiveShareInternalAndroid);
+          stream.receiveBroadcastStream().listen(receiveShareInternalAndroid);
     } else if (!kIsWeb && Platform.isIOS) {
-      _shareReceiveSubscription ??= ReceiveSharingIntent.getMediaStream()
-          .listen(_receiveShareInternalIOS, onError: (err) {
+      _shareReceiveSubscription ??= handler.sharedMediaStream
+          .listen(receiveShareInternalIOS, onError: (err) {
         debugPrint("Share intent error: $err");
       });
     }
@@ -74,17 +77,22 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
       _shareReceiveSubscription = null;
     }
     shareReceiveEnabled = false;
+    handler.resetInitialSharedMedia();
     debugPrint("disabled share receiving");
   }
 
   /// Receive the share IOS - in our case we receive a zip file url: file:///private/var/mobile/Containers/Shared/AppGroup/...
-  void _receiveShareInternalIOS(List<SharedMediaFile> shared) {
-    debugPrint("Share received - $shared");
-    if (shared.isNotEmpty) receiveShareIOS(shared[0].path);
+  void receiveShareInternalIOS(SharedMedia? shared) {
+    debugPrint("Chat received - ${shared?.encode() ?? []}");
+    if (shared != null) {
+      if (shared.attachments != null && shared.attachments!.isNotEmpty) {
+        receiveShareIOS(shared.attachments!.first!.path);
+      }
+    }
   }
 
   /// Receive the share Android - in our case we receive a content url: content://com.whatsapp.provider.media/export_chat/972537739211@s.whatsapp.net/e26757...
-  void _receiveShareInternalAndroid(dynamic shared) {
+  void receiveShareInternalAndroid(dynamic shared) {
     debugPrint("Share received - $shared");
     receiveShareAndroid(Share.fromReceived(shared));
   }
