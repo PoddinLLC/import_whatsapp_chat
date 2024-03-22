@@ -85,6 +85,8 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   void receiveShareInternalIOS(SharedMedia? shared) {
     debugPrint("Chat received - ${shared?.encode() ?? []}");
     if (shared != null) {
+      debugPrint(
+          "Attachments path - ${shared.attachments?.map((e) => '{${e?.path}, ${e?.type.name}}').toList() ?? []}");
       if (shared.attachments != null && shared.attachments!.isNotEmpty) {
         receiveShareIOS(shared.attachments!.first!.path);
       }
@@ -100,7 +102,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// In iOS WhatsApp sends us a zip file.
   /// We need to unzip the file, read it and sent it to the [ChatAnalyzer.analyze]
   Future<void> receiveShareIOS(String path) async {
-    path = Uri.decodeFull(path);
+    // path = Uri.decodeFull(path);
     if (!isWhatsAppChatUrl(path)) throw Exception("Not a WhatsApp chat url");
     if (!await IOSUtils.unzip(path)) throw Exception("Unzip failed");
     List<String> chat = await IOSUtils.readFile();
