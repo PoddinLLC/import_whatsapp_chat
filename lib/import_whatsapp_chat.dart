@@ -102,9 +102,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// We need to unzip the file, read it and send it to the [ChatAnalyzer.analyze]
   Future<void> receiveShareIOS(String path) async {
     debugPrint("IOS whatsapp zip file path - $path");
-    // path = Uri.decodeFull(path);
-    if (!isWhatsAppChatUrl(path)) throw Exception("Not a WhatsApp chat url");
-    if (!await IOSUtils.unzip(path)) throw Exception("Unzip failed");
+    final validUrl = isWhatsAppChatUrl(path);
+    if (!validUrl) throw Exception("Not a WhatsApp chat url");
+    final unzipped = await IOSUtils.unzip(path);
+    if (!unzipped) throw Exception("Unzip failed");
     List<String> chat = await IOSUtils.readFile();
     chat.insert(0, path.split('/').last);
     receiveChatContent(ChatAnalyzer.analyze(chat));

@@ -7,8 +7,7 @@ import 'package:path_provider/path_provider.dart';
 class IOSUtils {
   /// Unzip the zip file from WhatsApp
   static Future<bool> unzip(String zipPath, [Directory? destination]) async {
-    destination ??= await getTemporaryDirectory();
-    // zipPath = zipPath.split('file://').last;
+    destination ??= await getApplicationSupportDirectory();
     final zipFile = File(zipPath);
     try {
       debugPrint("Extracting zip file to directory: ${destination.toString()}");
@@ -24,7 +23,7 @@ class IOSUtils {
   /// Read the txt file inside the extracted zip file
   static Future<List<String>> readFile([String? path]) async {
     try {
-      path ??= '${(await getTemporaryDirectory()).path}/_chat.txt';
+      path ??= '${(await getApplicationSupportDirectory()).path}/_chat.txt';
       debugPrint("Reading zip file: $path");
       final file = File(path);
       List<String> lines = await file.readAsLines();
