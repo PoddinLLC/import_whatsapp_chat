@@ -25,6 +25,9 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Can Receive the chat or not
   bool shareReceiveEnabled = false;
 
+  ///
+  bool sharedMediaReceived = false;
+
   /// Save image paths
   bool _allowReceiveWithMedia = false;
 
@@ -47,12 +50,12 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Enable [_allowReceiveWithMedia] to save the images paths
   void enableReceivingChatWithMedia() {
-    _allowReceiveWithMedia = true;
+    setState(() => _allowReceiveWithMedia = true);
   }
 
   /// Disable [shareReceiveEnabled]
   void disableReceivingChatWithMedia() {
-    _allowReceiveWithMedia = false;
+    setState(() => _allowReceiveWithMedia = false);
   }
 
   /// Enable the receiving
@@ -66,7 +69,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
         debugPrint("Share intent error: $err");
       });
     }
-    shareReceiveEnabled = true;
+    setState(() => shareReceiveEnabled = true);
     debugPrint("enabled share receiving");
   }
 
@@ -77,13 +80,15 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
       _shareReceiveSubscription = null;
     }
     shareReceiveEnabled = false;
+    sharedMediaReceived = false;
     handler.resetInitialSharedMedia();
     debugPrint("disabled share receiving");
   }
 
   /// Receive the share IOS - in our case we receive a zip file url: file:///private/var/mobile/Containers/Shared/AppGroup/40AE836A-A91D-4F36-AADF-8E141C12DA86/WhatsApp Chat - My 9mobile No.zip
   void receiveShareInternalIOS(SharedMedia? shared) {
-    if (shared != null) {
+    if (shared != null && !sharedMediaReceived) {
+      setState(() => sharedMediaReceived = true);
       debugPrint(
           "Attachments path - ${shared.attachments?.map((e) => '{${e?.path}, ${e?.type.name}}').toList() ?? []}");
       if (shared.attachments != null && shared.attachments!.isNotEmpty) {
@@ -94,8 +99,11 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Receive the share Android - in our case we receive a content url: content://com.whatsapp.provider.media/export_chat/972537739211@s.whatsapp.net/e26757...
   void receiveShareInternalAndroid(dynamic shared) {
-    debugPrint("Share received - $shared");
-    receiveShareAndroid(Share.fromReceived(shared));
+    if (shared != null && !sharedMediaReceived) {
+      setState(() => sharedMediaReceived = true);
+      debugPrint("Share received - $shared");
+      receiveShareAndroid(Share.fromReceived(shared));
+    }
   }
 
   /// In iOS WhatsApp sends us a zip file.
