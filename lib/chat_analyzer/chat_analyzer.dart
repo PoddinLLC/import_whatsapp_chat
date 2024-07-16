@@ -21,13 +21,14 @@ class ChatAnalyzer {
   }
 
   /// In case your phone is one English, The name of the chat will be like this:
-  /// 
+  ///
   /// WhatsApp Chat with [name_of_chat].txt for android
-  /// 
+  ///
   /// WhatsApp Chat - [name_of_chat].zip for ios
-  /// 
+  ///
   /// This function spilt the name of the chat.
   static String _getChatName(String name) {
+    debugPrint('First line of chat: $name');
     if (!kIsWeb && Platform.isAndroid) {
       return name.split('.txt').first.split('WhatsApp Chat with ').last;
     } else {

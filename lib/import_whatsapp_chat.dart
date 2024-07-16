@@ -25,6 +25,9 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Can Receive the chat or not
   bool shareReceiveEnabled = false;
 
+  /// shared file name with extension
+  String fileName = '';
+
   ///
   bool sharedMediaReceived = false;
 
@@ -37,39 +40,51 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   ///
   final handler = ShareHandlerPlatform.instance;
 
+  /// device is iOS
+  bool get isIOS => !kIsWeb && Platform.isIOS;
+
+  /// device is android
+  bool get isAndroid => !kIsWeb && Platform.isAndroid;
+
   /// We need to enable [shareReceiveEnabled] at first
   @override
   void initState() {
     /// For sharing images coming from outside the app while the app is closed
-    if (!kIsWeb && Platform.isIOS) {
-      handler.getInitialSharedMedia().then(receiveShareInternalIOS);
-    }
+    // if (isIOS) {
+    handler.getInitialSharedMedia().then(receiveShareInternalIOS);
+    // }
     enableShareReceiving();
     super.initState();
   }
 
   /// Enable [_allowReceiveWithMedia] to save the images paths
   void enableReceivingChatWithMedia() {
-    setState(() => _allowReceiveWithMedia = true);
+    if (mounted) setState(() => _allowReceiveWithMedia = true);
+  }
+
+  /// Update shared file name
+  void updateSharedFileName(String path) {
+    if (mounted) setState(() => fileName = path.split('/').last);
+    debugPrint('Filename: $fileName');
   }
 
   /// Disable [shareReceiveEnabled]
   void disableReceivingChatWithMedia() {
-    setState(() => _allowReceiveWithMedia = false);
+    if (mounted) setState(() => _allowReceiveWithMedia = false);
   }
 
   /// Enable the receiving
   void enableShareReceiving() {
-    if (!kIsWeb && Platform.isAndroid) {
-      _shareReceiveSubscription ??=
-          stream.receiveBroadcastStream().listen(receiveShareInternalAndroid);
-    } else if (!kIsWeb && Platform.isIOS) {
-      _shareReceiveSubscription ??= handler.sharedMediaStream
-          .listen(receiveShareInternalIOS, onError: (err) {
-        debugPrint("Share intent error: $err");
-      });
-    }
-    setState(() => shareReceiveEnabled = true);
+    // if (isAndroid) {
+    //   _shareReceiveSubscription ??=
+    //       stream.receiveBroadcastStream().listen(receiveShareInternalAndroid);
+    // } else if (isIOS) {
+    _shareReceiveSubscription ??= handler.sharedMediaStream
+        .listen(receiveShareInternalIOS, onError: (err) {
+      debugPrint("Share intent error: $err");
+    });
+    // }
+    if (mounted) setState(() => shareReceiveEnabled = true);
     debugPrint("enabled share receiving");
   }
 
@@ -81,6 +96,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
     }
     shareReceiveEnabled = false;
     sharedMediaReceived = false;
+    fileName = '';
     handler.resetInitialSharedMedia();
     debugPrint("disabled share receiving");
   }
@@ -88,7 +104,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Receive the share IOS - in our case we receive a zip file url: file:///private/var/mobile/Containers/Shared/AppGroup/40AE836A-A91D-4F36-AADF-8E141C12DA86/WhatsApp Chat - My 9mobile No.zip
   void receiveShareInternalIOS(SharedMedia? shared) {
     if (shared != null && !sharedMediaReceived) {
-      setState(() => sharedMediaReceived = true);
+      if (mounted) setState(() => sharedMediaReceived = true);
       debugPrint(
           "Attachments path - ${shared.attachments?.map((e) => '{${e?.path}, ${e?.type.name}}').toList() ?? []}");
       if (shared.attachments != null && shared.attachments!.isNotEmpty) {
@@ -100,7 +116,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Receive the share Android - in our case we receive a content url: content://com.whatsapp.provider.media/export_chat/972537739211@s.whatsapp.net/e26757...
   void receiveShareInternalAndroid(dynamic shared) {
     if (shared != null && !sharedMediaReceived) {
-      setState(() => sharedMediaReceived = true);
+      if (mounted) setState(() => sharedMediaReceived = true);
       debugPrint("Share received - $shared");
       receiveShareAndroid(Share.fromReceived(shared));
     }
@@ -109,13 +125,20 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// In iOS WhatsApp sends us a zip file.
   /// We need to unzip the file, read it and send it to the [ChatAnalyzer.analyze]
   Future<void> receiveShareIOS(String path) async {
-    debugPrint("IOS whatsapp zip file path - $path");
+    updateSharedFileName(path);
+    debugPrint("Shared file path - $path");
+    // confirm if file is exported whatsapp chat
     final validUrl = isWhatsAppChatUrl(path);
-    if (!validUrl) throw Exception("Not a WhatsApp chat url");
+    if (!validUrl) throw Exception("Not a WhatsApp chat file");
+    // unzip file
     final unzipped = await IOSUtils.unzip(path);
     if (!unzipped) throw Exception("Unzip failed");
-    List<String> chat = await IOSUtils.readFile();
-    chat.insert(0, path.split('/').last);
+    // read extracted file
+    List<String> chat = await IOSUtils.readFile(
+        isAndroid ? fileName.replaceFirst('zip', 'txt') : '_chat.txt');
+    // analyze chat
+    final filename = isAndroid ? fileName.replaceFirst('zip', 'txt') : fileName;
+    chat.insert(0, filename);
     receiveChatContent(ChatAnalyzer.analyze(chat));
   }
 
@@ -124,10 +147,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Calling an abstract function [receiveChatContent] with [ChatContent] variable.
   Future<void> receiveShareAndroid(Share shared) async {
     final url = shared.shares[0].path;
+    updateSharedFileName(url);
     if (!isWhatsAppChatUrl(url)) throw Exception("Not a WhatsApp chat url");
     List<String> chat = List<String>.from(await methodChannel
         .invokeMethod("analyze", <String, dynamic>{"data": url}));
-
     receiveChatContent(ChatAnalyzer.analyze(chat, _getImagePaths(shared)));
   }
 
@@ -144,10 +167,10 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Check if the url is a WhatsApp chat url
   bool isWhatsAppChatUrl(String url) {
-    if (!kIsWeb && Platform.isAndroid) {
-      return url
-          .startsWith("content://com.whatsapp.provider.media/export_chat/");
-    } else if (!kIsWeb && Platform.isIOS) {
+    if (isAndroid) {
+      return url.toLowerCase().contains('whatsapp');
+      //.startsWith("content://com.whatsapp.provider.media/export_chat/");
+    } else if (isIOS) {
       return url.startsWith("/private/var/mobile/Containers/Shared/AppGroup/");
     }
     return false;

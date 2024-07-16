@@ -82,9 +82,7 @@ class ChatInfoUtilities {
     RegExp regExp =
         isAndroid ? _regExpToSplitLineAndroid : _regExpToSplitLineIOS;
 
-    if (isAndroid && line.split(regExp).length == 1) {
-      return nullMessageContent;
-    } else if (!kIsWeb && Platform.isIOS && line.split(regExp).length == 1) {
+    if (line.split(regExp).length == 1) {
       return nullMessageContent;
     }
 

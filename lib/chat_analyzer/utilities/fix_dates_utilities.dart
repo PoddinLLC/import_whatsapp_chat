@@ -9,7 +9,7 @@ class FixDateUtilities {
   static String hourStringOrganization(String timeFromLine, String dayTime) {
     var hour = timeFromLine.split(':')[0];
     var minute = timeFromLine.split(':')[1];
-    var seconds = timeFromLine.split(':').length == 2
+    final seconds = timeFromLine.split(':').length == 2
         ? '${randomNumber(5, 50)}'
         : timeFromLine.split(':')[2];
     // If message was sent after 12 noon, message time should be converted to PM
@@ -20,7 +20,7 @@ class FixDateUtilities {
     else if (dayTime == 'am' && hour == "12") {
       hour = '00';
     }
-    // Otherwise, retain message time
+    // Otherwise, modify message time
     else {
       hour = fixMonthOrDayTo01(hour);
     }
@@ -78,11 +78,11 @@ class FixDateUtilities {
     return number;
   }
 
-  ///The year in Whatsapp are 22, where it should be 2022.
-  ///This function added the 2 missing numbers (maybe if you are watching this it is now 3!)
+  ///The year in Whatsapp are 24, where it should be 2024.
+  ///This function added the 20 missing numbers (maybe if you are checking this it is now 30!)
   static String _fixYear20(String year) {
     if (year.length == 4) return year;
-    String firstFirstTwoLetters = '${DateTime.now().year}'.substring(0, 2);
-    return '$firstFirstTwoLetters$year';
+    String firstTwoLetters = '${DateTime.now().year}'.substring(0, 2);
+    return '$firstTwoLetters$year';
   }
 }
