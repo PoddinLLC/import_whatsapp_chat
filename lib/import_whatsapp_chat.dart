@@ -131,7 +131,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   }
 
   List<String>? _getImagePaths(List<String> messages) {
-    if (!_allowReceiveWithMedia) return null;
+    if (!_allowReceiveWithMedia) return [];
     List<String> ret = [];
     for (String message in messages) {
       if (message.endsWith(".jpg")) {
