@@ -49,9 +49,8 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     /// For sharing images coming from outside the app while the app is closed
-    // if (isIOS) {
     handler.getInitialSharedMedia().then(receiveSharedFile);
-    // }
+    //
     enableShareReceiving();
     super.initState();
   }
@@ -67,12 +66,12 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
     debugPrint('Filename: $fileName');
   }
 
-  /// Disable [shareReceiveEnabled]
+  /// Disable [_allowReceiveWithMedia] to not save images path
   void disableReceivingChatWithMedia() {
     if (mounted) setState(() => _allowReceiveWithMedia = false);
   }
 
-  /// Enable the receiving
+  /// Enable [shareReceiveEnabled] and subscribe to sharedMediaStream
   void enableShareReceiving() {
     _shareReceiveSubscription ??=
         handler.sharedMediaStream.listen(receiveSharedFile, onError: (err) {
@@ -82,7 +81,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
     debugPrint("enabled share receiving");
   }
 
-  /// Disable the receiving
+  /// Disable [shareReceiveEnabled]
   void disableShareReceiving() {
     if (_shareReceiveSubscription != null) {
       _shareReceiveSubscription!.cancel();
@@ -145,8 +144,8 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// Check if the url is a WhatsApp chat url
   bool isWhatsAppChatUrl(String url) {
     if (isAndroid) {
-      return url //.toLowerCase().contains('whatsapp');
-          .startsWith("content://com.whatsapp.provider.media/export_chat/");
+      return url.toLowerCase().contains('whatsapp chat');
+      // .startsWith("content://com.whatsapp.provider.media/export_chat/");
     } else if (isIOS) {
       return url.startsWith("/private/var/mobile/Containers/Shared/AppGroup/");
     }
