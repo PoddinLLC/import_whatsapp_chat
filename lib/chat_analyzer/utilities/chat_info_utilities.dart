@@ -35,13 +35,15 @@ class ChatInfoUtilities {
         if (!first) {
           MessageContent msgContent = _getMsgContentFromStringLine(
               lines[lines.length - (isAndroid ? 1 : 2)]);
+
           if (!names.contains(msgContent.senderId) &&
-              msgContent.senderId != null) {
+              msgContent.senderId != null &&
+              msgContent.msg != null) {
             names.add(msgContent.senderId!);
             countNameMsgs.add([msgContents.length]);
             msgContents.add(msgContent);
           } else {
-            if (msgContent.senderId != null) {
+            if (msgContent.senderId != null && msgContent.msg != null) {
               countNameMsgs[names.indexOf(msgContent.senderId!)]
                   .add(msgContents.length);
               msgContents.add(msgContent);
