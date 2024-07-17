@@ -16,7 +16,7 @@ class IOSUtils {
     destination ??= await getApplicationDocumentsDirectory();
     final zipFile = File(zipPath);
     try {
-      debugPrint("Extracting zip file to directory: ${destination.toString()}");
+      debugPrint("Extracting zip file to directory: ${destination.toString()}/poddin");
       await ZipFile.extractToDirectory(
           zipFile: zipFile,
           destinationDir: Directory('${destination.path}/poddin'));
