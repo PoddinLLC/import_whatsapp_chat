@@ -7,10 +7,10 @@ import 'fix_dates_utilities.dart';
 
 class ChatInfoUtilities {
   /// [_regExp] to find where each message starts and Where it ends:
-  /// Android:
-  /// message starts with something like: "25/04/2022, 10:17 am - Dolev Test Phone: Hi"
-  /// iOS:
-  /// message starts with something like: "[25/04/2022, 10:17:07] Dolev Test Phone: Hi"
+  /// 
+  /// Android: message starts with something like: "25/04/2022, 10:17 am - Dolev Test Phone: Hi"
+  /// 
+  /// iOS: message starts with something like: "[25/04/2022, 10:17:07] Dolev Test Phone: Hi"
   static final RegExp _regExp = RegExp(
       r"[?\d\d?[/|.]\d\d?[/|.]\d?\d?\d\d,?\s\d\d?:\d\d:?\d?\d?\s?-?]?\s?");
 
@@ -37,13 +37,12 @@ class ChatInfoUtilities {
               lines[lines.length - (isAndroid ? 1 : 2)]);
 
           if (!names.contains(msgContent.senderId) &&
-              msgContent.senderId != null &&
-              msgContent.msg != null) {
+              msgContent.senderId != null) {
             names.add(msgContent.senderId!);
             countNameMsgs.add([msgContents.length]);
             msgContents.add(msgContent);
           } else {
-            if (msgContent.senderId != null && msgContent.msg != null) {
+            if (msgContent.senderId != null) {
               countNameMsgs[names.indexOf(msgContent.senderId!)]
                   .add(msgContents.length);
               msgContents.add(msgContent);

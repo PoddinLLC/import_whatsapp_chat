@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 /// When WhatsApp export a chat it will export the special messages in different languages.
@@ -31,6 +30,7 @@ class Languages {
 
   static const List<String> attachment = [
     'file attached', // English
+    'null'
   ];
 
   static const List<String> mediaOmitted = [
@@ -63,7 +63,7 @@ class Languages {
   ];
 
   static bool hasMatchForAll(String text) {
-    /// In iOS the spacial messages it a little bit different
+    /// In iOS message is a little bit different
     if (!kIsWeb && Platform.isIOS) {
       text = text.replaceAll('.', '');
       text = text.replaceRange(0, 1, '');

@@ -1,9 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
-
 import '../chat_analyzer/utilities/fix_dates_utilities.dart';
 
 /// Each message in the chat class

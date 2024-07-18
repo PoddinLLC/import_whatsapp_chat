@@ -127,7 +127,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
     // analyze chat
     final filename = isAndroid ? fileName.replaceFirst('zip', 'txt') : fileName;
     chat.insert(0, filename);
-    receiveChatContent(ChatAnalyzer.analyze(chat, _getImagePaths(chat)));
+    receiveChatContent(ChatAnalyzer.analyze(chat, _getImagePaths(chat)), path);
   }
 
   List<String>? _getImagePaths(List<String> messages) {
@@ -153,5 +153,5 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   }
 
   /// Abstract function calling after we receive and analyze the chat
-  void receiveChatContent(ChatContent chatContent);
+  void receiveChatContent(ChatContent chatContent, String filePath);
 }
