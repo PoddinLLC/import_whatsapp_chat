@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 class Languages {
   static const List<String> youDeletedThisMessage = [
     'You deleted this message', // English
+    '<You deleted this message>',
     'מחקת את ההודעה הזו', // Hebrew
     'Вы удалили это сообщение', // Russian
     'Vous avez supprimé ce message', // French
@@ -30,11 +31,14 @@ class Languages {
 
   static const List<String> attachment = [
     'file attached', // English
-    'null'
+    'null',
+    'image omitted',
+    'video omitted',
   ];
 
   static const List<String> mediaOmitted = [
     '<Media omitted>', // English
+    'Media omitted',
     '<המדיה הוסרה>', // Hebrew
     '<המדיה לא נכללה>', // Hebrew
     '<Без медиафайлов>', // Russian
@@ -50,6 +54,7 @@ class Languages {
 
   static const List<String> thisMessageWasDeleted = [
     'This message was deleted', // English
+    '<This message was deleted>',
     'הודעה זו נמחקה', // Hebrew
     'Данное сообщение удалено', // Russian
     'Ce message a été supprimé', // French
@@ -68,6 +73,9 @@ class Languages {
       text = text.replaceAll('.', '');
       text = text.replaceRange(0, 1, '');
     }
+    text = text.replaceAll('<This message was edited>', '');
+    text = text.replaceAll('This message was edited', '');
+    //
     return hasMatch(text, youDeletedThisMessage) ||
         hasMatch(text, mediaOmitted) ||
         hasMatch(text, thisMessageWasDeleted) ||

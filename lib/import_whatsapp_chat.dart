@@ -114,7 +114,6 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// We need to unzip the file, read it and send it to the [ChatAnalyzer.analyze]
   Future<void> extractSharedFile(String path) async {
     updateSharedFileName(path);
-    debugPrint("Shared file path - $path");
     // confirm if file is exported whatsapp chat
     final validUrl = isWhatsAppChatUrl(path);
     if (!validUrl) throw Exception("Not a WhatsApp chat file");

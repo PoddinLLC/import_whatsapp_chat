@@ -1,6 +1,6 @@
 name: import_whatsapp_chat
 description: A flutter plugin that enables flutter apps to receive exported chats from WhatsApp.
-version: 1.0.2
+version: 1.0.21
 
 environment:
   sdk: ">=3.0.3 <4.0.0"
