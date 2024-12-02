@@ -37,7 +37,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   StreamSubscription? _shareReceiveSubscription;
 
   ///
-  final handler = ShareHandlerPlatform.instance;
+  late ShareHandlerPlatform handler;
 
   /// device is iOS
   bool get isIOS => !kIsWeb && Platform.isIOS;
@@ -48,10 +48,13 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
   /// We need to enable [shareReceiveEnabled] at first
   @override
   void initState() {
-    /// For sharing images coming from outside the app while the app is closed
-    handler.getInitialSharedMedia().then(receiveSharedFile);
-    //
-    enableShareReceiving();
+    if (!kIsWeb) {
+      handler = ShareHandlerPlatform.instance;
+      /// For sharing images coming from outside the app while the app is closed
+      handler.getInitialSharedMedia().then(receiveSharedFile);
+      //
+      enableShareReceiving();
+    }
     super.initState();
   }
 
