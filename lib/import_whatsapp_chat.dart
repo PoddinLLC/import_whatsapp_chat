@@ -60,22 +60,26 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Enable [_allowReceiveWithMedia] to save the images paths
   void enableReceivingChatWithMedia() {
+     if(kIsWeb) return;
     if (mounted) setState(() => _allowReceiveWithMedia = true);
   }
 
   /// Update shared file name
   void updateSharedFileName(String path) {
+     if(kIsWeb) return;
     if (mounted) setState(() => fileName = path.split('/').last);
     debugPrint('Filename: $fileName');
   }
 
   /// Disable [_allowReceiveWithMedia] to not save images path
   void disableReceivingChatWithMedia() {
+    if(kIsWeb) return;
     if (mounted) setState(() => _allowReceiveWithMedia = false);
   }
 
   /// Enable [shareReceiveEnabled] and subscribe to sharedMediaStream
   void enableShareReceiving() {
+     if(kIsWeb) return;
     _shareReceiveSubscription ??=
         handler.sharedMediaStream.listen(receiveSharedFile, onError: (err) {
       debugPrint("Share intent error: $err");
@@ -86,6 +90,7 @@ abstract class ReceiveWhatsappChat<T extends StatefulWidget> extends State<T> {
 
   /// Disable [shareReceiveEnabled]
   void disableShareReceiving() {
+     if(kIsWeb) return;
     if (_shareReceiveSubscription != null) {
       _shareReceiveSubscription!.cancel();
       _shareReceiveSubscription = null;
