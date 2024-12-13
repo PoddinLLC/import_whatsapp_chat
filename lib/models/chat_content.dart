@@ -1,4 +1,3 @@
-// ignore_for_file: deprecated_member_use
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:import_whatsapp_chat/import_whatsapp_chat.dart';
@@ -124,6 +123,5 @@ class ChatContent {
   }
 
   @override
-  int get hashCode => hashValues(chatName, sizeOfChat, members, messages,
-      indexesPerMember, msgsPerMember, imagesPaths);
+  int get hashCode => hashIgnoreAsciiCase(toString());
 }
