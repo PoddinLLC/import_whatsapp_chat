@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   path_provider: ^2.0.11
-  collection: 1.18.0
+  collection: 1.19.0
   flutter_archive: ^6.0.3
   share_handler: ^0.0.22
   flutter:
